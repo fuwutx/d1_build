@@ -1,0 +1,17 @@
+{
+  "name": "Lichee RV D1 Build with Gemini Antigravity",
+  "image": "mcr.microsoft.com/devcontainers/universal:latest",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "enableDockerBuildKit": true
+    }
+  },
+  "postCreateCommand": "curl -fsSL https://antigravity.google/cli/install.sh | bash && echo 'export PATH=$HOME/.local/bin:$PATH' >> ~/.bashrc",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  }
+}
