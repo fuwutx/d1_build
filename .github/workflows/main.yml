@@ -1,42 +1,52 @@
-name: Auto Build Lichee RV Debian Linux Bootable Image.
+name: Build Lichee RV Debian Linux Image
 on:
+  workflow_dispatch:
   push:
+    branches:
+      - main
+      - master
     tags:
       - '*'
+
 jobs:
-  build-all-os:
+  build-lichee-rv:
     runs-on: ubuntu-latest
     steps:
-        - uses: actions/checkout@v2
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-        - name: Install depends
-          run: sudo apt install -y qemu-user-static qemu-system qemu-utils qemu-system-misc binfmt-support
+      - name: Install Host Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qemu-user-static qemu-system qemu-utils binfmt-support
 
-        - name: Prepare
-          run: |
-            echo ${{runner.workspace}}
-            mkdir -p lichee_rv_86
-            mkdir -p lichee_rv_dock
-        - name: Build
-          run: |
-            export DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1
-            docker-compose build
+      - name: Prepare Directories
+        run: |
+          mkdir -p lichee_rv_dock
 
-        - name: Create Lichee RV Dock Image
-          run: |
-            export DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1
-            docker-compose up dock
-            ls -l lichee_rv_dock/*
-        - name: Create Lichee RV 86 panel Image
-          run: |
-            export DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1
-            docker-compose up panel
-            ls -l lichee_rv_86/*
-        - name: Release
-          uses: softprops/action-gh-release@v1
-          if: startsWith(github.ref, 'refs/tags/')
-          with:
-            files: |
-              lichee_rv_86/lichee_rv_86*.img.xz
-              lichee_rv_dock/lichee_rv_dock*.img.xz
-              README.txt
+      - name: Build Docker Container
+        run: |
+          export DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1
+          docker compose build dock
+
+      - name: Create Lichee RV Dock Image
+        run: |
+          export DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1
+          docker compose up dock
+          ls -lh lichee_rv_dock/
+
+      - name: Upload Image Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: lichee_rv_dock_debian_image
+          path: lichee_rv_dock/*.img.xz
+          retention-days: 7
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            lichee_rv_dock/*.img.xz
+            README.txt
+

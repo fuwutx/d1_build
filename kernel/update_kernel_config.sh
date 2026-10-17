@@ -101,7 +101,16 @@ add_config 'CONFIG_VIDEO_SUNXI_CEDRUS' 'y'
 #   1.14" 135×240 SPI LCD screen.
 #   Sitronix ST7789V controller
 #
+add_config 'CONFIG_STAGING' 'y'
+add_config 'CONFIG_FB_TFT' 'y'
+add_config 'CONFIG_FB_TFT_ST7789V' 'y'
+add_config 'CONFIG_SPI' 'y'
+add_config 'CONFIG_SPI_SUN6I' 'y'
+add_config 'CONFIG_SPI_SPIDEV' 'y'
+add_config 'CONFIG_BACKLIGHT_CLASS_DEVICE' 'y'
+add_config 'CONFIG_BACKLIGHT_GPIO' 'y'
 add_config 'CONFIG_DRM_PANEL_MIPI_DBI' 'y'
+add_config 'CONFIG_DRM_PANEL_SITRONIX_ST7789V' 'y'
 add_config 'CONFIG_CRYPTO' 'y'
 add_config 'CONFIG_CRYPTO_LIB_ARC4' 'y'
 add_config 'CONFIG_CRYPTO_AES' 'y'
